@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { FaArrowRight } from "react-icons/fa";
 import { z } from "zod";
 import FormAnnotation from "../../components/FormAnnotation";
+import { useRouter } from "next/navigation";
 
 const claimUserNameFormSchema = z.object({
   username: z
@@ -19,19 +20,23 @@ const claimUserNameFormSchema = z.object({
 type ClaimUserNameFormData = z.infer<typeof claimUserNameFormSchema>
 
 export default function ClaimUserNameForm(){
-  const { register, handleSubmit, formState: { errors } } = useForm<ClaimUserNameFormData>({
+  const router = useRouter()
+
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ClaimUserNameFormData>({
     resolver: zodResolver(claimUserNameFormSchema)
   })
 
-  const handleClaimUserName = (data: ClaimUserNameFormData) => {
-    console.log(data)
+  const handleClaimUserName = async (data: ClaimUserNameFormData) => {
+    const { username } = data
+
+    await router.push(`http://localhost:3000/cadastrar?username=${username}`)
   }
 
   return(
     <div>
       <form onSubmit={handleSubmit(handleClaimUserName)} className="w-full justify-center flex gap-4 items-center rounded-lg bg-gray-800 p-3">
         <InputComponent type="text" register={register('username')} placeholder="Insira o seu nome"/>
-        <ButtonComponent icon={<FaArrowRight />} title="Reservar usuário" type="submit" className="text-white bg-ignite-300" />
+        <ButtonComponent disabled={isSubmitting} icon={<FaArrowRight />} title="Reservar usuário" type="submit" className="text-white bg-ignite-300" />
       </form>
       <FormAnnotation>
         <span className="text-xs">{errors.username ? errors.username.message : null}</span>
