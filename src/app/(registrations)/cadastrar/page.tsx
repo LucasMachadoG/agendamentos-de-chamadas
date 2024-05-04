@@ -1,4 +1,4 @@
-import MultiStep from "../components/MultiStep";
+import MultiStep from "../../components/MultiStep";
 import FormCadastrar from "./components/FormCadastrar";
 import Header from "./components/Header";
 

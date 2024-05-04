@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma.connection";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { sign } from "jsonwebtoken";
 
 export async function POST(req: NextRequest) {
   const { username, name } = await req.json()
@@ -26,10 +27,20 @@ export async function POST(req: NextRequest) {
     }
   })
 
-  cookies().set('@ignitecall:userId', user.id, {
+  const secret = process.env.JWT_SECRET || ""
+
+  const token = await sign({
+    username: user.username,
+    id: user.id
+  }, secret, {expiresIn: '7d'})
+
+  cookies().set('@ignitecall:userId', token, {
     maxAge: 60 * 60 * 24 * 7, // 7 dias
     path: '/'
   })
 
-  return NextResponse.json(user, { status: 201 });
+  return NextResponse.json({
+    user,
+    token
+  }, { status: 201 });
 }
