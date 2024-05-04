@@ -34,6 +34,8 @@ export default function ClaimUserNameForm(){
         username, 
         name
       })
+
+      toast.success("Cadastro realizado.")
     }catch(error: any){
       if(error instanceof AxiosError && error?.response?.data?.message){
         toast.error(error.response.data.message)
