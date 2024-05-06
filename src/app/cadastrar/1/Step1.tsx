@@ -13,12 +13,14 @@ interface NextStep{
 }
 
 const formCadastrarSchema = z.object({
+  email: z.string().email({ message: "Informe um email válido"}),
   username: z
     .string()
     .min(3, {message: 'Nome precisa ter pelo menos 3 letras.'})
     .regex(/^([a-z\\-]+)$/i, {message: 'Nome pode ter apenas letras e hifens'})
     .transform(username => username.toLowerCase()),
-  name: z.string().min(3,{message: 'Nome precisa ter pelo menos 3 letras.'})
+  name: z.string().min(3,{message: 'Nome precisa ter pelo menos 3 letras.'}),
+  password: z.string().min(6, { message: "Senha precisa ter no minimo 6 digitos." })
 })
 
 type formCadastrarData = z.infer<typeof formCadastrarSchema>
@@ -30,11 +32,13 @@ export default function Step1({ nextStep }: NextStep){
 
   const handleClaimUserName = async (data: formCadastrarData) => {
     try{
-      const { username, name } = data
+      const { email, username, name, password } = data
 
       const result = await api.post("/users", {
+        email,
         username, 
-        name
+        name,
+        password
       })
 
       toast.success("Cadastro realizado com sucesso.")
@@ -45,17 +49,21 @@ export default function Step1({ nextStep }: NextStep){
         return
       }
 
-      console.log(error)
+      toast.error(error)
     }
   }
 
   return(
     <div className="mt-6">
       <form onSubmit={handleSubmit(handleClaimUserName)} className="w-full flex flex-col rounded-lg gap-2 bg-gray-800 p-4">
+        <InputComponent register={register('email')} label="Email" placeholder="" ClassNameInput="w-full p-3" ClassNameLabel="text-sm text-gray-100"/>
+        <span className="text-xs text-red-500">{errors.email ? errors.email.message : null}</span>
         <InputComponent register={register('username')} label="Nome de usuário" placeholder="" ClassNameInput="w-full p-3" ClassNameLabel="text-sm text-gray-100"/>
         <span className="text-xs text-red-500">{errors.username ? errors.username.message : null}</span>
         <InputComponent register={register('name')} label="Nome completo" placeholder="" ClassNameInput="w-full p-3" ClassNameLabel="text-sm text-gray-100"/>
         <span className="text-xs text-red-500">{errors.name ? errors.name.message : null}</span>
+        <InputComponent type="password" register={register('password')} label="Senha" placeholder="" ClassNameInput="w-full p-3" ClassNameLabel="text-sm text-gray-100"/>
+        <span className="text-xs text-red-500">{errors.password ? errors.password.message : null}</span>
         <ButtonComponent disabled={isSubmitting} className="text-white bg-ignite-300" type="submit" title="Próximo passo" icon={<FaArrowRight />} />
       </form>
     </div>
