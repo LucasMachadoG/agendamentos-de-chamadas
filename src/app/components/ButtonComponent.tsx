@@ -15,8 +15,8 @@ export default function ButtonComponent({ title, className, icon, onClick, type 
       onClick={onClick}
       className={`text-sm px-2 py-3 font-medium rounded-lg flex justify-center items-center ${className}`}
     > 
+      <span className="mr-2">{title}</span>
       {icon}
-      {title}
     </button>
   )
 }

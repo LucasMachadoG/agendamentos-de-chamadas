@@ -1,8 +1,13 @@
-export default function Header(){
+interface HeaderProps{
+  title?: string 
+  content?: string
+}
+
+export default function Header({ title, content }: HeaderProps){
   return (
     <div>
-      <p className="text-2xl font-bold text-white">Bem-vindo ao Ignite Call!</p>
-      <span className="text-gray-200">Precisamos de algumas informações para criar o seu perfil! Ah, você < br/> pode editar essas informações depois</span>
+      <p className="text-2xl font-bold text-white">{title}</p>
+      <span className="text-gray-200">{content}</span>
     </div>
   )
 }
