@@ -1,6 +1,7 @@
 import GoogleProvider from "next-auth/providers/google";
 
 import NextAuth from "next-auth"
+import { prisma } from "@/lib/prisma.connection";
 
 const handler = NextAuth({
   providers: [
@@ -15,6 +16,15 @@ const handler = NextAuth({
         try{
           const { name, email } = user
 
+          const userEmailAlreadyExists = await prisma.user.findUnique({
+            where: {
+              email
+            }
+          })
+
+          if(userEmailAlreadyExists){
+            return userEmailAlreadyExists
+          }
         }catch(error: any){
           console.log(error)
         }
