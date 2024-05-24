@@ -2,32 +2,12 @@ import { prisma } from "@/lib/prisma.connection";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { sign } from "jsonwebtoken";
-import { hash } from "bcryptjs";
+import { getUserByUsername } from "@/data/user";
 
 export async function POST(req: NextRequest) {
-  const { email, username, name, password } = await req.json()
+  const { username, name } = await req.json()
 
-  const passwordHash = await hash(password, 8)
-
-  const userWithSameEmail = await prisma.user.findUnique({
-    where: {
-      email
-    }
-  })
-
-  if(userWithSameEmail){
-    return NextResponse.json({
-      message: "Email já cadastrado.",
-    }, {
-      status: 409
-    })
-  }
-
-  const userWithSameUsername = await prisma.user.findUnique({
-    where: {
-      username
-    }
-  })
+  const userWithSameUsername = await getUserByUsername(username)
 
   if(userWithSameUsername){
     return NextResponse.json({
@@ -39,10 +19,8 @@ export async function POST(req: NextRequest) {
 
   const user = await prisma.user.create({
     data: {
-      email,
       username,
       name,
-      passwordHash
     }
   })
 

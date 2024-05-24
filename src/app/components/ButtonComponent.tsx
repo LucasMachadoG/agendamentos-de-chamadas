@@ -1,22 +1,19 @@
-import { ButtonHTMLAttributes, ReactElement } from "react"
+import React, { ButtonHTMLAttributes } from "react";
 
-interface ButtonProps{
-  title: string
-  className?: string
-  icon?: ReactElement
-  onClick?: () => void
-  type: "submit" | "button" | "reset"
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  href?: string;
 }
 
-export default function ButtonComponent({ title, className, icon, onClick, type }: ButtonProps & ButtonHTMLAttributes<HTMLButtonElement>){
-  return(
+export default function Button({ href, disabled, children, className, ...rest }: ButtonProps){
+  const buttonClasses = `${className} ${disabled ? 'opacity-50 cursor-not-allowed': ''}`
+
+  return (
     <button
-      type={type}
-      onClick={onClick}
-      className={`text-sm px-2 py-3 font-medium rounded-lg flex justify-center items-center ${className}`}
-    > 
-      <span className="mr-2">{title}</span>
-      {icon}
+      disabled={disabled}
+      className={buttonClasses}
+      {...rest}
+    >
+      {children}
     </button>
-  )
+  );
 }

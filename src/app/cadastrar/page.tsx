@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import MultiStep from "../components/MultiStep";
-import FormCadastrar from "./components/FormCadastrar";
 import Header from "./components/Header";
 import Step1 from "./1/Step1";
 import Step2 from "./2/Step2";
@@ -14,8 +13,6 @@ export default function Cadastrar(){
 
     return formStepData
   })  
-
-  console.log(step - 1)
 
   useEffect(() => {
     localStorage.setItem('register-form-step', JSON.stringify(step))

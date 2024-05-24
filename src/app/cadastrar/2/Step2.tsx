@@ -1,12 +1,16 @@
-import ButtonComponent from "@/app/components/ButtonComponent"
-import InputComponent from "@/app/components/InputComponent"
-import { api } from "@/lib/axios"
+'use client'
+
 import { zodResolver } from "@hookform/resolvers/zod"
-import { AxiosError } from "axios"
 import { useForm } from "react-hook-form"
 import { FaArrowRight } from "react-icons/fa"
-import { toast } from "sonner"
 import { z } from "zod"
+import { signIn } from "next-auth/react"
+import FormError from "@/app/components/FormError"
+import { useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
+import Button from "@/app/components/ButtonComponent"
+import { CheckIcon } from "@radix-ui/react-icons"
+import getSession from "@/app/_actions/getSession"
 
 interface NextStep{
   nextStep: () => void
@@ -22,41 +26,81 @@ const formCadastrarSchema = z.object({
 })
 
 type formCadastrarData = z.infer<typeof formCadastrarSchema>
-
+ 
 export default function Step2(){
-  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<formCadastrarData>({
+  const [messageError, setMessageError] = useState<string>('')
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const hasAuthError = searchParams.get('error')
+
+    if(hasAuthError){
+      setMessageError('Falha ao se conectar com o Google, verifique se você habilitou as permissões de acesso ao Google Calendar.')
+    }
+  }, [])
+
+  useEffect(() => {
+    (async () => {
+      const session = await getSession()
+
+      if(session){
+        setIsSignedIn(true)
+      }
+
+      return null
+    })()
+  }, [])
+
+  const onClick = (provider: "google") => {
+    signIn(provider, {
+      callbackUrl: '/cadastrar'
+    })
+  }
+
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<formCadastrarData>({
     resolver: zodResolver(formCadastrarSchema)
   })
 
   const handleClaimUserName = async (data: formCadastrarData) => {
-    try{
-      const { username, name } = data
-
-      const result = await api.post("/users", {
-        username, 
-        name
-      })
-
-      toast.success("Cadastro realizado.")
-    }catch(error: any){
-      if(error instanceof AxiosError && error?.response?.data?.message){
-        toast.error(error.response.data.message)
-        return
-      }
-
-      console.log(error)
-    }
+    
   }
 
   return(
     <div className="mt-6">
-      <form onSubmit={handleSubmit(handleClaimUserName)} className="w-full flex flex-col rounded-lg gap-2 bg-gray-800 p-4">
+      <form className="w-full flex flex-col rounded-lg gap-2 bg-gray-800 p-4">
         <div className="w-full flex justify-between items-center bg-gray-800 border py-4 px-5 border-gray-600 rounded-lg">
           <span className="text-gray-100 font-medium">Google Agenda</span>
-          <ButtonComponent type="submit" title="Conectar" icon={<FaArrowRight />} className="text-ignite-300 px-4 py-3 border border-ignite-300 hover:bg-ignite-300 hover:text-white transition duration-300" />
+          {isSignedIn ? (
+            <Button 
+              disabled={isSignedIn}
+              className="rounded-lg flex gap-2 justify-center items-center text-white bg-ignite-300 text-sm px-2 py-3 font-medium"
+            >
+              Conectado
+              <CheckIcon className="h-5 w-5" />
+            </Button> 
+          ) : (
+            <Button
+            onClick={() => onClick('google')}
+            type="button"
+            className="text-ignite-300 px-4 py-3 border border-ignite-300 
+              hover:bg-ignite-300 hover:text-white transition duration-300 text-sm font-medium 
+              rounded-lg flex gap-2 justify-center items-center"
+          >
+            <FaArrowRight />
+            Conectar
+          </Button>
+          )}
+          
         </div>
-        <ButtonComponent disabled={isSubmitting} className="text-white bg-ignite-300" type="submit" title="Próximo passo" icon={<FaArrowRight />} />
+        <FormError message={messageError} />
+        <Button disabled={!isSignedIn} className="text-white bg-ignite-300 text-sm px-2 py-3 font-medium rounded-lg flex gap-2 justify-center items-center">
+          <FaArrowRight />
+          Próximo passo
+        </Button>
       </form>
+
     </div>
   )
 }
