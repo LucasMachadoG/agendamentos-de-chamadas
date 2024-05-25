@@ -24,20 +24,12 @@ export async function POST(req: NextRequest) {
     }
   })
 
-  const secret = process.env.JWT_SECRET as string
-
-  const token = await sign({
-    username: user.username,
-    id: user.id
-  }, secret, {expiresIn: '7d'})
-
-  cookies().set('@ignitecall:userId', token, {
+  cookies().set('igniteCallUserId', user.id, {
     maxAge: 60 * 60 * 24 * 7, // 7 dias
     path: '/'
   })
 
   return NextResponse.json({
     user,
-    token
   }, { status: 201 });
 }

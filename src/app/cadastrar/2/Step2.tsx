@@ -8,9 +8,9 @@ import { signIn } from "next-auth/react"
 import FormError from "@/app/components/FormError"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import Button from "@/app/components/ButtonComponent"
-import { CheckIcon } from "@radix-ui/react-icons"
+import Button from "@/app/components/Button"
 import getSession from "@/app/_actions/getSession"
+import { CheckIcon } from "@radix-ui/react-icons"
 
 interface NextStep{
   nextStep: () => void
@@ -45,9 +45,12 @@ export default function Step2(){
     (async () => {
       const session = await getSession()
 
+      
       if(session){
         setIsSignedIn(true)
       }
+
+      console.log(session?.user)
 
       return null
     })()

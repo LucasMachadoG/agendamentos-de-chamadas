@@ -1,6 +1,6 @@
 'use client'
 
-import ButtonComponent from "@/app/components/ButtonComponent";
+import Button from "@/app/components/Button";
 import InputComponent from "@/app/components/InputComponent";
 import { api } from "@/lib/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -53,7 +53,15 @@ export default function ClaimUserNameForm(){
         <span className="text-xs text-red-500">{errors.username ? errors.username.message : null}</span>
         <InputComponent register={register('name')} label="Nome completo" placeholder="" ClassNameInput="w-full p-3" ClassNameLabel="text-sm text-gray-100"/>
         <span className="text-xs text-red-500">{errors.name ? errors.name.message : null}</span>
-        <ButtonComponent disabled={isSubmitting} className="text-white bg-ignite-300" type="submit" title="Próximo passo" icon={<FaArrowRight />} />
+        <Button
+          disabled={isSubmitting}
+          type="submit"
+          className="text-white bg-ignite-300 px-2 py-3 
+          font-medium rounded-lg flex gap-2 justify-center items-center"
+        >
+          Próximo passo
+          <FaArrowRight />
+        </Button>
       </form>
     </div>
   )

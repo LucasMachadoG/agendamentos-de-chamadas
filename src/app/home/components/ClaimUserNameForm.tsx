@@ -1,6 +1,5 @@
 'use client'
 
-import ButtonComponent from "@/app/components/ButtonComponent";
 import InputComponent from "@/app/components/InputComponent";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -8,6 +7,7 @@ import { FaArrowRight } from "react-icons/fa";
 import { z } from "zod";
 import FormAnnotation from "../../components/FormAnnotation";
 import { useRouter } from "next/navigation";
+import Button from "@/app/components/Button";
 
 const claimUserNameFormSchema = z.object({
   username: z
@@ -36,7 +36,15 @@ export default function ClaimUserNameForm(){
     <div>
       <form onSubmit={handleSubmit(handleClaimUserName)} className="w-full justify-center flex gap-4 items-center rounded-lg bg-gray-800 p-3">
         <InputComponent type="text" register={register('username')} placeholder="Insira o seu nome"/>
-        <ButtonComponent disabled={isSubmitting} icon={<FaArrowRight />} title="Reservar usuário" type="submit" className="text-white bg-ignite-300" />
+        <Button
+          disabled={isSubmitting}
+          type="submit"
+          className="text-white bg-ignite-300 text-sm px-2 py-3 
+          font-medium rounded-lg flex gap-2 justify-center items-center"
+        >
+          Reservar usuário
+          <FaArrowRight />
+        </Button>
       </form>
       <FormAnnotation>
         <span className="text-xs">{errors.username ? errors.username.message : null}</span>
