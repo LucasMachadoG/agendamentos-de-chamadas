@@ -2,7 +2,7 @@ import { FieldError, FieldErrorsImpl, Merge, UseFormRegisterReturn } from "react
 
 interface InputProps{
   label?: string
-  type?: 'text' | 'password' | 'email' | 'file'
+  type?: 'text' | 'password' | 'email' | 'file' | 'checkbox'
   ClassNameInput?: string
   ClassNameLabel?: string
   placeholder?: string

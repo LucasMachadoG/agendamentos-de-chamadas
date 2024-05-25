@@ -5,6 +5,7 @@ import MultiStep from "../components/MultiStep";
 import Header from "./components/Header";
 import Step1 from "./1/Step1";
 import Step2 from "./2/Step2";
+import Step3 from "./3/Step3";
 
 export default function Cadastrar(){
   const [step, setStep] = useState(() => {
@@ -40,13 +41,14 @@ export default function Cadastrar(){
         content="Conecte o seu calendário para verificar automaticamente as horas ocupadas e os novos eventos 
         à medida em que são agendados."
       />,
-      form: <Step2 />
+      form: <Step2 nextStep={nextStep} />
     }, 
     {
       header: <Header
         title="Quase lá"
         content="Defina o intervalo de horários que você está disponível em cada dia da semana."
-      />
+      />,
+      form: <Step3 />
     }, 
     {
       header: <Header 

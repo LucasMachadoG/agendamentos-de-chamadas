@@ -27,7 +27,7 @@ const formCadastrarSchema = z.object({
 
 type formCadastrarData = z.infer<typeof formCadastrarSchema>
  
-export default function Step2(){
+export default function Step2({ nextStep }: NextStep){
   const [messageError, setMessageError] = useState<string>('')
   const [isSignedIn, setIsSignedIn] = useState(false);
 
@@ -98,7 +98,7 @@ export default function Step2(){
           
         </div>
         <FormError message={messageError} />
-        <Button disabled={!isSignedIn} className="text-white bg-ignite-300 text-sm px-2 py-3 font-medium rounded-lg flex gap-2 justify-center items-center">
+        <Button onClick={nextStep} disabled={!isSignedIn} className="text-white bg-ignite-300 text-sm px-2 py-3 font-medium rounded-lg flex gap-2 justify-center items-center">
           <FaArrowRight />
           Próximo passo
         </Button>
