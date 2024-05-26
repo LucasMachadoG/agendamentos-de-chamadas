@@ -1,6 +1,9 @@
 import Button from "@/app/components/Button"
+import FormError from "@/app/components/FormError"
+import convertTimeStringToMinutes from "@/app/utils/convert.time.string.on.minutes"
 import getWeekDays from "@/app/utils/get.week.days"
 import { Checkbox } from "@/components/ui/checkbox"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { FaArrowRight } from "react-icons/fa"
 import z from 'zod'
@@ -10,14 +13,49 @@ interface NextStep{
 }
 
 const timeIntervalsFormSchema = z.object({
-
+  intervals: z
+    .array(
+      z.object({
+        weekDay: z.number().min(0).max(6),
+        enabled: z.boolean(),
+        startTime: z.string(),
+        endTime: z.string(),
+      }),
+    )
+    .length(7)
+    .transform((intervals) => intervals.filter((interval) => interval.enabled))
+    .refine((intervals) => intervals.length > 0, {
+      message: 'Você precisa selecionar pelo menos um dia da semana',
+    })
+    .transform((intervals) => {
+      return intervals.map((interval) => {
+        return {
+          weekDay: interval.weekDay,
+          startTimeInMinutes: convertTimeStringToMinutes(interval.startTime),
+          endTimeInMinutes: convertTimeStringToMinutes(interval.endTime),
+        }
+      })
+    })
+    .refine(
+      (intervals) => {
+        return intervals.every(
+          (interval) =>
+            interval.endTimeInMinutes - 60 >= interval.startTimeInMinutes,
+        )
+      },
+      {
+        message:
+          'O horário de término deve ser pelo menos 1h distante do início.',
+      },
+    ),
 })
 
+type TimeIntervalsFormInput = z.input<typeof timeIntervalsFormSchema>
+type TimeIntervalsFormOutput = z.output<typeof timeIntervalsFormSchema>
+
 export default function Step3({ nextStep }: NextStep){
-  const { register, control, watch, handleSubmit, formState: {
-    isSubmitting,
-    errors
-  } } = useForm({
+  const { register, control, watch, handleSubmit, formState: { errors, isSubmitting } } = useForm<TimeIntervalsFormInput>({
+    resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
         { weekDay: 0, enabled: false, startTime: '08:00', endTime: '18:00' },
@@ -40,8 +78,8 @@ export default function Step3({ nextStep }: NextStep){
 
   const intervals = watch('intervals')
 
-  const handleSetTimeIntervals = () => {
-
+  const handleSetTimeIntervals = (data: any) => {
+    console.log(data as TimeIntervalsFormOutput)
   }
 
   return(
@@ -85,9 +123,14 @@ export default function Step3({ nextStep }: NextStep){
             </div>
           )
         })}
-        <Button onClick={nextStep} className="text-white bg-ignite-300 text-sm px-2 py-3 font-medium rounded-lg flex gap-2 justify-center items-center">
+
+        {/* TODO: Nao aparece a mensagem */}
+        {/* {errors.intervals && <FormError message={errors.intervals.message} />} */}
+        {/* {errors.intervals && <span>{errors.intervals.message}</span>} */}
+
+        <Button onClick={nextStep} disabled={isSubmitting} className="text-white bg-ignite-300 text-sm px-2 py-3 font-medium rounded-lg flex gap-2 justify-center items-center">
           <FaArrowRight />
-          Próximo passo
+          Próximo passo 
         </Button>
       </form>
     </div>
