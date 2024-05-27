@@ -50,8 +50,6 @@ export default function Step2({ nextStep }: NextStep){
         setIsSignedIn(true)
       }
 
-      console.log(session?.user)
-
       return null
     })()
   }, [])

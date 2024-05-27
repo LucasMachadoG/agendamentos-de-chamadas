@@ -3,9 +3,12 @@ import FormError from "@/app/components/FormError"
 import convertTimeStringToMinutes from "@/app/utils/convert.time.string.on.minutes"
 import getWeekDays from "@/app/utils/get.week.days"
 import { Checkbox } from "@/components/ui/checkbox"
+import { api } from "@/lib/axios"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { AxiosError } from "axios"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { FaArrowRight } from "react-icons/fa"
+import { toast } from "sonner"
 import z from 'zod'
 
 interface NextStep{
@@ -78,8 +81,25 @@ export default function Step3({ nextStep }: NextStep){
 
   const intervals = watch('intervals')
 
-  const handleSetTimeIntervals = (data: any) => {
-    console.log(data as TimeIntervalsFormOutput)
+  const handleSetTimeIntervals = async (data: any) => {
+    try{
+      const formData = data as TimeIntervalsFormOutput
+
+      const { intervals } = formData
+  
+      const result = await api.post('/users/intervalos', {
+        intervals
+      })
+
+      toast.success("criado com sucesso")
+    }catch(error: any){
+      if(error instanceof AxiosError && error?.response?.data?.message){
+        toast.error(error.response.data.message)
+        return
+      }
+
+      toast.error(error)
+    }
   }
 
   return(

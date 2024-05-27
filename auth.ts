@@ -1,3 +1,4 @@
+import getUserById from "@/app/data/user"
 import PrismaAdapter from "@/lib/auth/prisma.adapter"
 import { PrismaClient } from "@prisma/client"
 import NextAuth from "next-auth"
@@ -41,5 +42,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return true
     },
-  }
+    async session({ token, session }){
+      if(token.sub && session.user){
+        session.user.id = token.sub
+      }
+
+      return session
+    },
+    async jwt({ token }){
+      if(!token.sub){
+        return token
+      }
+
+      const user = await getUserById(token.sub)
+
+      if(!user){
+        return token
+      }
+
+      return token
+    }
+  },
 })
