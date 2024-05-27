@@ -97,8 +97,8 @@ export default function Step2({ nextStep }: NextStep){
         </div>
         <FormError message={messageError} />
         <Button onClick={nextStep} disabled={!isSignedIn} className="text-white bg-ignite-300 text-sm px-2 py-3 font-medium rounded-lg flex gap-2 justify-center items-center">
-          <FaArrowRight />
           Próximo passo
+          <FaArrowRight />
         </Button>
       </form>
 

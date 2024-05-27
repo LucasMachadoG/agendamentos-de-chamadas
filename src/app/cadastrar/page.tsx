@@ -53,7 +53,7 @@ export default function Cadastrar(){
     }, 
     {
       header: <Header 
-        title="Defina sua disponibilidade"
+        title="Finalize o seu perfil!"
         content="Por último, uma breve descrição e uma foto de perfil."
       />,
       form: <Step4 />

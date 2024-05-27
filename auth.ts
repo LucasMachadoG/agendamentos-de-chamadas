@@ -45,18 +45,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ token, session }){
       if(token.sub && session.user){
         session.user.id = token.sub
-        session.user.image = token.picture
+        session.user.image = token.picture // Adiciona a URL da imagem do token à sessão
       }
 
       return session
     },
-    async jwt({ token }){
-      if(!token.sub){
+    async jwt({ token, user }){
+      if(user){
+        token.picture = user.image
         return token
-      }
-
-      if(!token.picture){
-        return token
+      } else {
+        const dbUser = await getUserById(token.sub)
+        token.picture = dbUser?.image || null
       }
 
       return token
