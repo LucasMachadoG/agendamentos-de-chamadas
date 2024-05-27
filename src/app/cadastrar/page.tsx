@@ -6,6 +6,7 @@ import Header from "./components/Header";
 import Step1 from "./1/Step1";
 import Step2 from "./2/Step2";
 import Step3 from "./3/Step3";
+import Step4 from "./4/Step4";
 
 export default function Cadastrar(){
   const [step, setStep] = useState(() => {
@@ -48,13 +49,14 @@ export default function Cadastrar(){
         title="Quase lá"
         content="Defina o intervalo de horários que você está disponível em cada dia da semana."
       />,
-      form: <Step3 />
+      form: <Step3 nextStep={nextStep} />
     }, 
     {
       header: <Header 
         title="Defina sua disponibilidade"
         content="Por último, uma breve descrição e uma foto de perfil."
-      />
+      />,
+      form: <Step4 />
     }
   ]
 

@@ -45,6 +45,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ token, session }){
       if(token.sub && session.user){
         session.user.id = token.sub
+        session.user.image = token.picture
       }
 
       return session
@@ -54,9 +55,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return token
       }
 
-      const user = await getUserById(token.sub)
-
-      if(!user){
+      if(!token.picture){
         return token
       }
 

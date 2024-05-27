@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma.connection";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { sign } from "jsonwebtoken";
 import { getUserByUsername } from "@/data/user";
 
 export async function POST(req: NextRequest) {
