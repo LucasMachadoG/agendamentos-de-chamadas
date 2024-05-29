@@ -21,6 +21,7 @@ type UpdateProfileData = z.infer<typeof updateProfileSchema>
 
 export default function Step4(){
   const [imageUrl, setImageUrl] = useState<string>('')
+  const [username, setUsername] = useState('')
   const router = useRouter()
 
   const {
@@ -35,11 +36,12 @@ export default function Step4(){
     (async () => {
       const session = await getSession()
 
-      if(!session?.user?.image){
+      if(!session?.user?.image || !session.user.username){
         return null
       }
 
       setImageUrl(session.user.image)
+      setUsername(session.user.username)
     })()
   }, [])
 
@@ -52,7 +54,8 @@ export default function Step4(){
       })
 
       toast.success("Perfil atualizado com sucesso!")
-      router.push(``)
+      localStorage.removeItem('register-form-step')
+      router.push(`/agendamento/${username}`)
     }catch(error: any){
       if (error instanceof AxiosError && error?.response?.data?.message) {
         toast.error(error.response.data.message);

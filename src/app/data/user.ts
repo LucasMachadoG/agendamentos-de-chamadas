@@ -13,3 +13,17 @@ export default async function getUserById(id: string | undefined){
 
   return user
 }
+
+export async function getUserByUsername(username: string){
+  const user = await prisma.user.findUnique({
+    where: {
+      username
+    }
+  })
+
+  if(!user){
+    return null
+  }
+
+  return user
+}
