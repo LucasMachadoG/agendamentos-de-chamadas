@@ -24,10 +24,6 @@ export default function Cadastrar(){
     setStep((prev) => prev + 1);
   }
 
-  const backStep = () => {
-    setStep((prev) => prev - 1);
-  }
-
   const formComponents = [
     {
       header: <Header 
