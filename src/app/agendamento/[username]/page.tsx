@@ -35,8 +35,6 @@ export default function Agendamento(){
       </div>
     )
   }
-
-  console.log(user)
   
   return(
     <div className="w-full h-screen flex items-center flex-col">

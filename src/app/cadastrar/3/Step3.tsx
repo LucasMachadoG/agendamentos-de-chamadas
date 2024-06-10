@@ -76,8 +76,6 @@ export default function Step3({ nextStep }: NextStep) {
 
   const weekDays = getWeekDays({});
 
-  console.log(weekDays)
-
   const { fields } = useFieldArray({
     name: 'intervals',
     control,
