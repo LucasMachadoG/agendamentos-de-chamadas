@@ -27,3 +27,17 @@ export async function getUserByUsername(username: string){
 
   return user
 }
+
+export async function getUserByEmail(email: string){
+  const user = await prisma.user.findUnique({
+    where: {
+      email
+    }
+  })
+
+  if(!user){
+    return null
+  }
+
+  return user
+}

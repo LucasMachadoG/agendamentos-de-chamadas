@@ -1,5 +1,5 @@
+import Link from "next/link";
 import ClaimUserNameForm from "./ClaimUserNameForm";
-import Button from "@/app/components/Button";
 
 export default function Hero(){
   return(
@@ -11,7 +11,7 @@ export default function Hero(){
       <div>
         <ClaimUserNameForm />
       </div>
-      <span className="text-white text-sm">Já possui uma conta? <Button type="button" className="text-gray-100 underline">Faça login aqui</Button> </span>
+      <span className="text-white text-sm">Já possui uma conta? <Link href={"/login"} className="text-gray-100 underline">Faça login aqui</Link> </span>
     </div>
   )
 }
