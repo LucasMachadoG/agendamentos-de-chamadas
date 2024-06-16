@@ -10,8 +10,6 @@ export default function PrismaAdapter(): Adapter {
       if(!userIdOnCookies){
         throw new Error('UserId not found on cookies')
       }
-
-      console.log(userIdOnCookies + 'TOKENNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN')
       
       const existingUser = await prisma.user.findUnique({
         where: { 

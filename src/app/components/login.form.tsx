@@ -24,7 +24,7 @@ export default function LoginForm(){
 
   const onClick = (provider: "google") => {
     signIn(provider, {
-      callbackUrl: '/agendamento'
+      callbackUrl: "/login"
     })
   }
 

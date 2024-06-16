@@ -35,27 +35,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ account, user }){
+    async signIn({ account, user}){
       if(!account?.scope?.includes('https://www.googleapis.com/auth/calendar')){
         return '/cadastrar/?error=permissions'
       }
 
       if(!user){
         return false
-      }
-
-      const { email } = user
-
-      if(!email){
-        return false
-      }
-
-      const existingUser = await getUserByEmail(email)
-
-      if(!existingUser?.username && !existingUser?.name){
-        return '/login/?error=account'
-      } else {
-        return `/agendamento/${existingUser.username}`
       }
 
       return true

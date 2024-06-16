@@ -7,9 +7,11 @@ import { User } from "@prisma/client"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import Step1 from "./1/Step1"
+import TimePicker from "./components/TimePicker"
 
 export default function Agendamento(){
   const [user, setUser] = useState<User | null>()
+  const isSelectedDate = true
   const [error, setError] = useState("")
 
   const params = useParams()
@@ -49,6 +51,7 @@ export default function Agendamento(){
         </div>
       </div>
       <Step1 />
+      {isSelectedDate && <TimePicker />}
     </div>
   )
 }
