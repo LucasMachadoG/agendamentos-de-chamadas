@@ -12,7 +12,7 @@ interface InputProps{
 
 export default function InputComponent({ label, type, ClassNameInput, ClassNameLabel, placeholder, register, value }: InputProps){
   return(
-    <div>
+    <div className="flex flex-col gap-2">
       <label className={`${ClassNameLabel}`}>
         {label}
       </label>

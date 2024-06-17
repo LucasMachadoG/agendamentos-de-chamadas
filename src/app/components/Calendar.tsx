@@ -1,19 +1,42 @@
+'use client'
+
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import getWeekDays from "../utils/get.week.days";
 import Button from "./Button";
+import { useState } from "react";
+import dayjs from 'dayjs'
 
 export default function Calendar() {
+  const [currentDate, setCurrentDate] = useState(() => {
+    return dayjs().set('date', 1)
+  })
+
+  const backMonth = () => {
+    const previousMonthDate = currentDate.subtract(1, 'month')
+
+    setCurrentDate(previousMonthDate)
+  } 
+
+  const nextMonth = () => {
+    const previousMonthDate = currentDate.add(1, 'month')
+
+    setCurrentDate(previousMonthDate)
+  }
+
+  const currentMonth = currentDate.format('MMMM')
+  const currentYear = currentDate.format('YYYY')
+
   const shortWeekDays = getWeekDays({ short: true });
 
   return (
-    <div className="w-[576px] bg-gray-800 rounded-lg p-5 flex flex-col justify-center items-center mt-10">
+    <div className="w-[576px] bg-gray-800 rounded-lg flex flex-col justify-center items-center">
       <div className="w-full flex justify-between items-center">
-        <span className="text-white">Setembro <span className="text-gray-200">2022</span></span>
+        <span className="text-white capitalize">{currentMonth} <span className="text-gray-200">{currentYear}</span></span>
         <div className="flex gap-5 text-gray-200">
-          <Button className="hover:text-gray-100 transition duration-300">
+          <Button onClick={backMonth} className="hover:text-gray-100 transition duration-300">
             <FaChevronLeft />
           </Button>
-          <Button className="hover:text-gray-100 transition duration-300">
+          <Button onClick={nextMonth} className="hover:text-gray-100 transition duration-300">
             <FaChevronRight />
           </Button>
         </div>
