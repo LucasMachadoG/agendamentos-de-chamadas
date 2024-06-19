@@ -13,7 +13,7 @@ import '../../../lib/dayjs'
 
 export default function Agendamento(){
   const [user, setUser] = useState<User | null>()
-  const isSelectedDate = false
+  const isSelectedDate = true
   const [error, setError] = useState("")
 
   const params = useParams()
@@ -52,11 +52,7 @@ export default function Agendamento(){
           <span className="text-gray-200">{user?.bio}</span>
         </div>
       </div>
-      <div className={`${isSelectedDate && 'w-[900px]'} bg-gray-800 rounded-lg mt-10 p-5 flex gap-4`}>
-        <Step1 />
-        {isSelectedDate && <TimePicker />}
-      </div>
-    
+      <Step1 />
     </div>
   )
 }

@@ -3,10 +3,25 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import getWeekDays from "../utils/get.week.days";
 import Button from "./Button";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import dayjs from 'dayjs'
 
-export default function Calendar() {
+interface CalendarWeek {
+  week: number,
+  days: Array<{
+    date: dayjs.Dayjs
+    disabled: boolean
+  }>
+}
+
+type CalendarWeeks = CalendarWeek[]
+
+interface CalendarProps {
+  selectedDate: Date | null
+  onDateSelected: (date: Date) => void
+}
+
+export default function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set('date', 1)
   })
@@ -25,6 +40,61 @@ export default function Calendar() {
 
   const currentMonth = currentDate.format('MMMM')
   const currentYear = currentDate.format('YYYY')
+
+  const calendarWeeks = useMemo(() => {
+    const daysInMonth = Array.from({
+      length: currentDate.daysInMonth()
+    }).map((_, index) => {
+      return currentDate.set('date', index + 1)
+    })
+    
+    const firstWeekDay = currentDate.get('day')
+
+    const previousMonth = Array.from({
+      length: firstWeekDay
+    }).map((_, index) => {
+      return currentDate.subtract(index + 1, 'day')
+    }).reverse()
+
+    const lastDayInCurrentMonth = currentDate.set('date', currentDate.daysInMonth())
+    const lastWeekDay = lastDayInCurrentMonth.get('day')
+    
+    const nextMonth = Array.from({
+      length: 7 - (lastWeekDay + 1)
+    }).map((_, index) => {
+      return lastDayInCurrentMonth.add(index + 1, 'day')
+    })
+
+    const calendarDays = [
+      ...previousMonth.map(date => {
+        return { date, disabled: true }
+      }),
+      ...daysInMonth.map(date => {
+        return { date, disabled: date.endOf('day').isBefore(new Date())  }
+      }),
+      ...nextMonth.map(date => {
+        return { date, disabled: true }
+      }),
+    ]
+
+    const calendarWeeks = calendarDays.reduce<CalendarWeeks>(
+      (weeks, _, i, original) => {
+        const isNewWeek = i % 7 === 0
+
+        if (isNewWeek) {
+          weeks.push({
+            week: i / 7 + 1,
+            days: original.slice(i, i + 7),
+          })
+        }
+
+        return weeks
+      },
+      [],
+    )
+
+    return calendarWeeks
+  }, [currentDate])
 
   const shortWeekDays = getWeekDays({ short: true });
 
@@ -47,56 +117,31 @@ export default function Calendar() {
             {shortWeekDays.map((day) => (
               <th key={day} className="text-gray-200 font-medium p-2">
                 {day}.
-              </th>
+              </th> 
             ))}
           </tr>
         </thead>
         <tbody className="text-center">
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">1</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">2</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">3</td>
-          </tr>
-          <tr>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">4</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">5</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">6</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">7</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">8</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">9</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">10</td>
-          </tr>
-          <tr>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">11</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">12</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">13</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">14</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">15</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">16</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">17</td>
-          </tr>
-          <tr>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">18</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">19</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">20</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">21</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">22</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">23</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">24</td>
-          </tr>
-          <tr>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">25</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">26</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">27</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">28</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">29</td>
-            <td className="p-5 text-white cursor-pointer bg-gray-600 rounded-lg">30</td>
-            <td className="p-5 text-white cursor-pointer"></td>
-          </tr>
+          {calendarWeeks.map(({ week, days }) => {
+            return (
+              <tr key={week}>
+                {days.map(({ date, disabled }) => {
+                  const isSelected = selectedDate && dayjs(selectedDate).isSame(date, 'day');
+                  return (
+                    <td key={date.toString()} className="">
+                      <Button 
+                        onClick={() => onDateSelected(date.toDate())}
+                        className={`p-5 hover:bg-gray-500 transition-colors text-white cursor-pointer rounded-lg w-full
+                          ${isSelected ? 'bg-gray-500' : 'bg-gray-600'}`}
+                        disabled={disabled}>{date.get('date')}
+                      </Button>
+                    </td>
+                  )
+                })}
+              </tr>
+            )
+          })}
+          
         </tbody>
       </table>
     </div>
