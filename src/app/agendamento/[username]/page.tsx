@@ -52,7 +52,7 @@ export default function Agendamento(){
           <span className="text-gray-200">{user?.bio}</span>
         </div>
       </div>
-      <Step1 />
+      <Step1 username={username as string} />
     </div>
   )
 }
