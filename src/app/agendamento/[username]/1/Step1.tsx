@@ -41,7 +41,7 @@ export default function Step1({ username }: Step1Props){
   return(
     <div className={`bg-gray-800 rounded-lg mt-10 p-5 flex gap-4 ${isSelectedDate ? 'w-[900px]' : ''}`}>
       <div>
-        <Calendar selectedDate={selectedDate} onDateSelected={setSelectedDate} />
+        <Calendar username={username} selectedDate={selectedDate} onDateSelected={setSelectedDate} />
       </div>
       {isSelectedDate && 
         <div className="w-full">

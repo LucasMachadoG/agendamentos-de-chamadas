@@ -3,8 +3,9 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import getWeekDays from "../utils/get.week.days";
 import Button from "./Button";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dayjs from 'dayjs'
+import { api } from "@/lib/axios";
 
 interface CalendarWeek {
   week: number,
@@ -19,23 +20,38 @@ type CalendarWeeks = CalendarWeek[]
 interface CalendarProps {
   selectedDate: Date | null
   onDateSelected: (date: Date) => void
+  username: string
 }
 
-export default function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
+export default function Calendar({ selectedDate, onDateSelected, username }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set('date', 1)
   })
+  const [blockedWeekDays, setBlockedWeekDays] = useState<number[]>([])
+
+  if(!blockedWeekDays){
+    return []
+  }
+
+  useEffect(() => {
+    api.get(`/users/ocupadas/${username}`, {
+      params: {
+        year: currentDate.get('year'),
+        month: currentDate.get('month')
+      }
+    }).then((response) => {
+      setBlockedWeekDays(response.data.blockedWeekDays)
+    })
+  }, [currentDate, username])
 
   const backMonth = () => {
     const previousMonthDate = currentDate.subtract(1, 'month')
-
     setCurrentDate(previousMonthDate)
   } 
 
   const nextMonth = () => {
-    const previousMonthDate = currentDate.add(1, 'month')
-
-    setCurrentDate(previousMonthDate)
+    const nextMonthDate = currentDate.add(1, 'month')
+    setCurrentDate(nextMonthDate)
   }
 
   const currentMonth = currentDate.format('MMMM')
@@ -47,7 +63,7 @@ export default function Calendar({ selectedDate, onDateSelected }: CalendarProps
     }).map((_, index) => {
       return currentDate.set('date', index + 1)
     })
-    
+
     const firstWeekDay = currentDate.get('day')
 
     const previousMonth = Array.from({
@@ -70,7 +86,7 @@ export default function Calendar({ selectedDate, onDateSelected }: CalendarProps
         return { date, disabled: true }
       }),
       ...daysInMonth.map(date => {
-        return { date, disabled: date.endOf('day').isBefore(new Date())  }
+        return { date, disabled: date.endOf('day').isBefore(new Date()) || blockedWeekDays.includes(date.day()) }
       }),
       ...nextMonth.map(date => {
         return { date, disabled: true }
@@ -94,7 +110,7 @@ export default function Calendar({ selectedDate, onDateSelected }: CalendarProps
     )
 
     return calendarWeeks
-  }, [currentDate])
+  }, [currentDate, blockedWeekDays])
 
   const shortWeekDays = getWeekDays({ short: true });
 
@@ -133,7 +149,7 @@ export default function Calendar({ selectedDate, onDateSelected }: CalendarProps
                         onClick={() => onDateSelected(date.toDate())}
                         className={`p-5 hover:bg-gray-500 transition-colors text-white cursor-pointer rounded-lg w-full
                           ${isSelected ? 'bg-gray-500' : 'bg-gray-600'}`}
-                        disabled={disabled}>{date.get('date')}
+                        disabled={disabled}>{date.date()}
                       </Button>
                     </td>
                   )
@@ -141,7 +157,6 @@ export default function Calendar({ selectedDate, onDateSelected }: CalendarProps
               </tr>
             )
           })}
-          
         </tbody>
       </table>
     </div>
