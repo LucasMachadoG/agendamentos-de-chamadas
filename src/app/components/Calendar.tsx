@@ -28,19 +28,17 @@ export default function Calendar({ selectedDate, onDateSelected, username }: Cal
     return dayjs().set('date', 1)
   })
   const [blockedWeekDays, setBlockedWeekDays] = useState<number[]>([])
-
-  if(!blockedWeekDays){
-    return []
-  }
+  const [blockedDates, setBlockedDates] = useState<number[]>([])
 
   useEffect(() => {
     api.get(`/users/ocupadas/${username}`, {
       params: {
         year: currentDate.get('year'),
-        month: currentDate.get('month')
+        month: currentDate.get('month') + 1
       }
     }).then((response) => {
       setBlockedWeekDays(response.data.blockedWeekDays)
+      setBlockedDates(response.data.blockedDates)
     })
   }, [currentDate, username])
 
@@ -86,7 +84,7 @@ export default function Calendar({ selectedDate, onDateSelected, username }: Cal
         return { date, disabled: true }
       }),
       ...daysInMonth.map(date => {
-        return { date, disabled: date.endOf('day').isBefore(new Date()) || blockedWeekDays.includes(date.day()) }
+        return { date, disabled: date.endOf('day').isBefore(new Date()) || blockedWeekDays.includes(date.day()) || blockedDates.includes(date.date()) }
       }),
       ...nextMonth.map(date => {
         return { date, disabled: true }
@@ -110,7 +108,7 @@ export default function Calendar({ selectedDate, onDateSelected, username }: Cal
     )
 
     return calendarWeeks
-  }, [currentDate, blockedWeekDays])
+  }, [currentDate, blockedWeekDays, blockedDates])
 
   const shortWeekDays = getWeekDays({ short: true });
 

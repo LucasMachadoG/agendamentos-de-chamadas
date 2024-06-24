@@ -64,7 +64,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
       date: true
     },
     where: {
-      userId: user.id,
+      user_id: user.id,
       date: {
         gte: referenceDate.set('hour', startHour).toDate(),
         lte: referenceDate.set('hour', endtHour).toDate()
@@ -73,7 +73,11 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
   })
 
   const availableTimes = possibleTimes.filter((time) => {
-    return !blockedTimes.some(blockedTime => blockedTime.date.getHours() === time)
+    const isTimeBlocked = blockedTimes.some(blockedTime => blockedTime.date.getHours() === time)
+
+    const isTimeInPast = referenceDate.set('hour', time).isBefore(new Date())
+
+    return !isTimeBlocked && !isTimeInPast
   })
 
   return NextResponse.json({

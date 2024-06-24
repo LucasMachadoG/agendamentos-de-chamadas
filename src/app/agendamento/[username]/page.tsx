@@ -7,14 +7,13 @@ import { User } from "@prisma/client"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import Step1 from "./1/Step1"
-import TimePicker from "./components/TimePicker"
 import Step2 from "./2/Step"
 import '../../../lib/dayjs'
 
 export default function Agendamento(){
   const [user, setUser] = useState<User | null>()
-  const isSelectedDate = true
   const [error, setError] = useState("")
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>()
 
   const params = useParams()
 
@@ -39,6 +38,10 @@ export default function Agendamento(){
       </div>
     )
   }
+
+  const handleClearSelectedDateTime = () => {
+    setSelectedDateTime(null)
+  }
   
   return(
     <div className="w-full h-screen flex items-center flex-col">
@@ -52,7 +55,11 @@ export default function Agendamento(){
           <span className="text-gray-200">{user?.bio}</span>
         </div>
       </div>
-      <Step1 username={username as string} />
+      {selectedDateTime ? (
+        <Step2 onCancelConfirmation={handleClearSelectedDateTime} schedulingDate={selectedDateTime} />
+      ) : (
+        <Step1 onSelectDateTime={setSelectedDateTime} username={username as string} />
+      )}
     </div>
   )
 }
