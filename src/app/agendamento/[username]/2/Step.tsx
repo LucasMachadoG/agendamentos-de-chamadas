@@ -82,7 +82,7 @@ export default function Step2({ schedulingDate, onCancelConfirmation, username }
         </div>
         <div className="w-full flex justify-end gap-2">
           <Button type="button" onClick={onCancelConfirmation} className="p-3 text-white border-[2px] border-gray-600 rounded-lg text-sm">Cancelar</Button>
-          <Button type="submit" className="p-3 text-white bg-ignite-500 rounded-lg text-sm">Confirmar</Button>
+          <Button disabled={isSubmitting} type="submit" className="p-3 text-white bg-ignite-500 rounded-lg text-sm">Confirmar</Button>
         </div>
       </form>
     </div>
