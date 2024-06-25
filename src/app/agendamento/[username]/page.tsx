@@ -56,7 +56,7 @@ export default function Agendamento(){
         </div>
       </div>
       {selectedDateTime ? (
-        <Step2 onCancelConfirmation={handleClearSelectedDateTime} schedulingDate={selectedDateTime} />
+        <Step2 onCancelConfirmation={handleClearSelectedDateTime} username={username as string} schedulingDate={selectedDateTime} />
       ) : (
         <Step1 onSelectDateTime={setSelectedDateTime} username={username as string} />
       )}

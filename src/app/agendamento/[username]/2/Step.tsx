@@ -1,9 +1,12 @@
 import Button from "@/app/components/Button";
 import InputComponent from "@/app/components/InputComponent";
+import { api } from "@/lib/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import { FaRegCalendar, FaRegClock } from "react-icons/fa";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formConfirmationStepSchema = z.object({
@@ -21,15 +24,35 @@ type formConfirmationStep = z.infer<typeof formConfirmationStepSchema>
 interface Step2Props{
   schedulingDate: Date
   onCancelConfirmation: () => void
+  username: string
 }
 
-export default function Step2({ schedulingDate, onCancelConfirmation }: Step2Props){
+export default function Step2({ schedulingDate, onCancelConfirmation, username }: Step2Props){
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<formConfirmationStep>({
     resolver: zodResolver(formConfirmationStepSchema)
   })
 
-  const onSubmit = (data: formConfirmationStep) => {
+  const onSubmit = async (data: formConfirmationStep) => {
+    const { name, email, observacoes } = data
 
+    try{
+      await api.post(`/users/confirmar/${username}`, {
+        name,
+        email,
+        observacoes,
+        date: schedulingDate
+      })
+
+      toast.success("Agendamento realizado com sucesso!")
+      onCancelConfirmation()
+    } catch(error: any){
+      if(error instanceof AxiosError && error?.response?.data?.message){
+        toast.error(error.response.data.message)
+        return
+      }
+
+      toast.error(error)
+    }
   }
 
   const describeDate = dayjs(schedulingDate).format('DD[ de ]MMMM[ de ]YYYY')
